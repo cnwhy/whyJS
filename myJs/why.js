@@ -39,16 +39,26 @@
         }
     }
 
+    /**
+     * 判断是否为单纯的object(json)对像
+     * @param  {object}  obj 
+     * @return {Boolean}
+     */
     var isPlainObject = why.isPlainObject = function( obj ) {
 		if ( typeOf( obj ) !== "object" || obj.nodeType || (obj === obj.window) ) {
 			return false;
 		}
-		if (obj.constructor && !Object.prototype.hasOwnProperty.call( obj.constructor.prototype, "isPrototypeOf" )) {
+		if (obj.constructor && !Object.prototype.hasOwnProperty.call(obj.constructor.prototype, "isPrototypeOf" )) {
 			return false;
 		}
 		return true;
 	}
 
+	/**
+	 * 扩展对像
+	 * @param  {Boolean} 是否递归扩展 
+	 * @return {object}
+	 */
     var extend = why.extend = function() {
 		var options, name, src, copy, copyIsArray, clone,
 			target = arguments[ 0 ] || {},
@@ -92,8 +102,8 @@
 
     /**
      * 从json对像及接点描述获取值
-     * @param  {object} json [description]
-     * @param  {string} map  [description]
+     * @param  {object} json 
+     * @param  {string} map  
      * @return {object}      对应值 or undefinde
      */
     var getMapJson = why.getMapJson = function(json,map){
@@ -135,7 +145,7 @@
         }
         /**
          * HTML解码 (浏览器)
-         * @param {[type]} text [description]
+         * @param {[type]} text 
          */
         ,Decode : function(text){
             var temp = document.createElement('p');
@@ -164,7 +174,7 @@
          * @param  {string} str    原字符串
          * @param  {number} len    长度
          * @param  {string} endstr 被截标示
-         * @return {[type]}        [description]
+         * @return {[type]}        
          */
         ,cutforByte : function(str,len,endstr){
             var len = +len
@@ -325,7 +335,7 @@
 			var qsArr = str.replace(/\+/g, " ").split(sep),
 				obj = {};
 			for (var i = 0; i < qsArr.length; i++) {
-				var _arr = qsArr[i].split(this.b)
+				var _arr = qsArr[i].split(eq)
 					if (_arr.length == 2) {
 						var _type = typeOf(obj[_arr[0]]);
 						switch (_type) {
