@@ -131,31 +131,6 @@
         })
     }
 
-    why.HTML = {
-    	/**
-    	 * HTML编码
-    	 * @param {string} html
-    	 * @param {bool} nbsp 是否转换空格
-    	 */
-        Encode : function(html,nbsp){
-            if(html === undefined || html == null) return ''
-            var str = html.toString().replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/'/g,'&#39;').replace(/"/g,'&#34;')
-            str = nbsp ? str.replace(/ /g,'&nbsp;') : str;
-            return str;
-        }
-        /**
-         * HTML解码 (浏览器)
-         * @param {[type]} text 
-         */
-        ,Decode : function(text){
-            var temp = document.createElement('p');
-            temp.innerHTML = text;
-            var output = temp.innerText || temp.textContent;
-            temp = null;
-            return output;
-        }
-    };
-
     why.str = {//字符串处理
     	/**
     	 * 简单计算字符串字结数 (非基础ASCII码算两个字结,用于定宽字符串显示)
@@ -266,10 +241,82 @@
         return o
     })()
 
+    //序列化,反序列化
+    var QueryString = why.QueryString = (function () {
+        var ms = {
+            sep : '&',
+            eq : '=',
+            escape : encodeURIComponent,
+            unescape : decodeURIComponent
+        };
+        var Stringify = function (obj, sep, eq, options) {
+            var sep = sep || ms.sep,
+                eq = eq || ms.eq,
+                options = options || {};
+            var _escape = typeOf(options.encodeURIComponent) == "function" ? options.encodeURIComponent : (this.escape || ms.escape);
+            var str = '',
+                qsArr = [];
+            for (var k in obj) {
+                var v = obj[k],
+                type = typeOf(v);
+                if (type == 'array') {
+                    for (var i = 0; i < v.length; i++) {
+                        qsArr.push({
+                            name : k,
+                            value : v[i].toString()
+                        })
+                    }
+                } else {
+                    qsArr.push({
+                        name : k,
+                        value : v.toString()
+                    })
+                }
+            }
+            for (var i = 0; i < qsArr.length; i++) {
+                qsArr[i] = [qsArr[i].name, _escape(qsArr[i].value)].join(eq)
+            }
+            return qsArr.join(sep)
+        }
+        var Parse = function (str, sep, eq, options) {
+            var sep = sep || ms.sep,
+                eq = eq || ms.eq,
+                options = options || {};
+            var _unescape = typeOf(options.encodeURIComponent) == "function" ? options.decodeURIComponent : (this.unescape || ms.unescape);
+            var qsArr = str.replace(/\+/g, " ").split(sep),
+                obj = {};
+            for (var i = 0; i < qsArr.length; i++) {
+                var _arr = qsArr[i].split(eq)
+                    if (_arr.length == 2) {
+                        var _type = typeOf(obj[_arr[0]]);
+                        switch (_type) {
+                        case 'undefined':
+                        case 'null':
+                            obj[_arr[0]] = _unescape(_arr[1]);
+                            break;
+                        case 'array':
+                            obj[_arr[0]].push(_unescape(_arr[1]));
+                            break;
+                        default:
+                            obj[_arr[0]] = [obj[_arr[0]]];
+                            obj[_arr[0]].push(_unescape(_arr[1]));
+                        }
+                    }
+            }
+            return obj;
+        }
+        return {
+            escape : encodeURIComponent,
+            unescape : decodeURIComponent,
+            stringify : Stringify,
+            parse : Parse,
+        }
+    })()
+
     /**
      * 格式化日期 (不支持时区)
      * @param  {date} date 
-     * @param  {string} fmt  
+     * @param  {string} fmt  默认"yyyy-MM-dd hh:mm:ss"
      * @return {string}     
      */
     why.dateFormat = function (date,fmt) {
@@ -290,77 +337,138 @@
         return fmt;
     }
 
-    //序列化,反序列化
-    var QueryString = why.QueryString = (function () {
-		var ms = {
-			sep : '&',
-			eq : '=',
-			escape : encodeURIComponent,
-			unescape : decodeURIComponent
-		};
-		var Stringify = function (obj, sep, eq, options) {
-			var sep = sep || ms.sep,
-				eq = eq || ms.eq,
-				options = options || {};
-			var _escape = typeOf(options.encodeURIComponent) == "function" ? options.encodeURIComponent : (this.escape || ms.escape);
-			var str = '',
-				qsArr = [];
-			for (var k in obj) {
-				var v = obj[k],
-				type = typeOf(v);
-				if (type == 'array') {
-					for (var i = 0; i < v.length; i++) {
-						qsArr.push({
-							name : k,
-							value : v[i].toString()
-						})
-					}
-				} else {
-					qsArr.push({
-						name : k,
-						value : v.toString()
-					})
-				}
-			}
-			for (var i = 0; i < qsArr.length; i++) {
-				qsArr[i] = [qsArr[i].name, _escape(qsArr[i].value)].join(eq)
-			}
-			return qsArr.join(sep)
-		}
-		var Parse = function (str, sep, eq, options) {
-			var sep = sep || ms.sep,
-				eq = eq || ms.eq,
-				options = options || {};
-			var _unescape = typeOf(options.encodeURIComponent) == "function" ? options.decodeURIComponent : (this.unescape || ms.unescape);
-			var qsArr = str.replace(/\+/g, " ").split(sep),
-				obj = {};
-			for (var i = 0; i < qsArr.length; i++) {
-				var _arr = qsArr[i].split(eq)
-					if (_arr.length == 2) {
-						var _type = typeOf(obj[_arr[0]]);
-						switch (_type) {
-						case 'undefined':
-						case 'null':
-							obj[_arr[0]] = _unescape(_arr[1]);
-							break;
-						case 'array':
-							obj[_arr[0]].push(_unescape(_arr[1]));
-							break;
-						default:
-							obj[_arr[0]] = [obj[_arr[0]]];
-							obj[_arr[0]].push(_unescape(_arr[1]));
-						}
-					}
-			}
-			return obj;
-		}
-		return {
-			escape : encodeURIComponent,
-			unescape : decodeURIComponent,
-			stringify : Stringify,
-			parse : Parse,
-		}
-	})()
+    var timeConvert = {d:1000 * 3600 * 24,h:1000 * 3600,m:1000 * 60,s:1000,S:1}
+    /**
+     * 毫秒转指定时间单位
+     * @param  {number} ms  毫秒
+     * @param  {string} Type (day/d,hour/h,minute/m,second/s)
+     * @return {number} 
+     */
+    var msConvert = why.msConvert = function(ms,Type){
+        var divNum = 1;
+        switch (Type) {
+            case "second":
+            case "s":
+                divNum = timeConvert.s;
+                break;
+            case "minute":
+            case "m":
+                divNum = timeConvert.m;
+                break;
+            case "hour":
+            case "h":
+                divNum = timeConvert.h;
+                break;
+            case "day":
+            case "d":
+                divNum = timeConvert.d;
+                break;
+            default:
+                break;
+        }
+        return ms/divNum;
+    }
+
+    /**
+     * 格式化时间
+     * @param  {number} ms  毫秒
+     * @param  {string} fmt  默认"%d%天%h%小时%m%分%s%秒"
+     * @param  {int} xs 最后一位保留小数位(默认0);
+     * @return {string} 
+     */
+    var ms2time = why.ms2time = function(ms,fmt,xs){
+        fmt = fmt || "%d%天%h%小时%m%分%s%秒"
+        xs = xs || 0;
+        ms = +ms;
+        if(isNaN(ms)){throw '参数错误';}
+        if(ms < 0 ){fmt = '- ' + fmt; ms = Math.abs(ms)}
+        var dw = ['d','h','m','s','S'],sdw = [];
+        for(var k = 0; k < dw.length; k++){
+            if (new RegExp('%' + dw[k] + '%').test(fmt)) sdw.push(dw[k])
+        }
+        for(var i = 0,n = sdw.length; i < n; i++){
+            var _dw = sdw[i];
+            var reg = new RegExp('%' + _dw + '%','g')
+            if(i == n-1){
+                fmt = fmt.replace(reg,(ms/timeConvert[_dw]).toFixed(xs));
+            }else{
+                fmt = fmt.replace(reg,Math.floor(ms/timeConvert[_dw]));
+            }
+            ms = ms % timeConvert[_dw];
+        }
+        return fmt;
+    }
+
+    /**
+     * 计算两个日期的间隔时间
+     * @param  {number} startTime  
+     * @param  {string} endTime  
+     * @param  {string} Type 反回值的单位(day/d,hour/h,minute/m,second/s)  默认毫秒
+     * @return {string} 
+     */
+    var getDateDiff = why.getDateDiff = function(startTime, endTime, Type){
+        //将计算间隔类性字符转换为小写
+        var sTime = new Date(startTime);      //开始时间
+        var eTime = new Date(endTime);  //结束时间
+        if(!Type){return ms2time(eTime.getTime() - sTime.getTime())}
+        Type = Type.toLowerCase();
+        //作为除数的数字
+        return msConvert(eTime.getTime() - sTime.getTime(),Type);
+    }
+
+
+
+
+
+/********************以下为浏览器相关函数***************************/
+    why.HTML = {
+        /**
+         * HTML编码
+         * @param {string} html
+         * @param {bool} nbsp 是否转换空格
+         */
+        Encode : function(html,nbsp){
+            if(html === undefined || html == null) return ''
+            var str = html.toString().replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/'/g,'&#39;').replace(/"/g,'&#34;')
+            str = nbsp ? str.replace(/ /g,'&nbsp;') : str;
+            return str;
+        }
+        /**
+         * HTML解码 (浏览器)
+         * @param {[type]} text 
+         */
+        ,Decode : function(text){
+            var temp = document.createElement('p');
+            temp.innerHTML = text;
+            var output = temp.innerText || temp.textContent;
+            temp = null;
+            return output;
+        }
+    };
+
+    /**
+     * ajax模拟表单POST跳转
+     * @param  {url}  要跳转的URL 
+     * @param  {params} 参数
+     * @param  {target} 目标 默认当前
+     */
+    var autoPost = why.autoPost = function(url, params, target) {
+        var tempForm = document.createElement("form");
+        var body = document.body;
+        tempForm.action = url;
+        tempForm.method = "post";
+        target && (tempForm.target = target);
+        tempForm.style.display = "none";
+        for (var x in params) {
+            var opt = document.createElement("textarea");
+            opt.name = x;
+            opt.value = params[x];
+            tempForm.appendChild(opt);
+        }
+        body.appendChild(tempForm);
+        tempForm.submit();
+        body.removeChild(tempForm);
+    }
 
     /**
      * 操作cookie方法 有三个重载 (name):get,(name,value,option):set,(name,null,path):delete
