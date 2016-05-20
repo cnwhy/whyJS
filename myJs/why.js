@@ -170,8 +170,8 @@
 
     //url sertch 及 hash 参数获取
     why.urlComm = (function(){
-        function getURL(kdy,url){//JS获取URL参数
-            var url = url || window.location.href;
+        function getURL(kdy,url_){//JS获取URL参数
+            var url = typeof url_ == 'undefined' ? window.location.href : url_;
             var paraString = url.substring(url.indexOf(this.m)+1,url.length).replace(/\#.*/,'').split('&');
             var paraObj = {}
             for (i=0; j=paraString[i]; i++){
@@ -186,11 +186,17 @@
         }
         function setURL(){//修改、添加,删除URL参数
             var set = function(key,val,url_){
-                var url = url_ || window.location.href
+                var url = typeof url_ == 'undefined' ? window.location.href : url_
+                    ,lurl="",rurl="";
+                if(this.m == '?' && url.indexOf("#")!=-1){
+                    rurl = url.substring(url.indexOf("#"),url.length);
+                    url = url.replace(/\#.*$/,'')
+                }
                 if(url.indexOf(this.m)<=-1){ url += this.m;}
+                lurl = url.substring(0,url.indexOf(this.m))
                 var paraString = url.substring(url.indexOf(this.m)+1,url.length)
                     ,key = key || ''
-                    ,val = (typeof(val) === 'undefined' || val === null)  ? '' : val
+                    ,val = (typeof(val) === 'undefined' || val === null)  ? '' : val;
                 if(key=='') {return url.replace(/\?*\s*$/,'')}
                 var reg = new RegExp('\\b' + key + '=[^&]*','')
                 if(reg.test(paraString) && val !=='' ){//值不为空，则替换
@@ -201,12 +207,12 @@
                     paraString += '&' + key + this.v + val
                 }
                 paraString = paraString.replace(/(^&*|&*$|&*(?=&))/g,'')
-                return url.split(this.m)[0] + (paraString == '' && this.m !== '#' ? '' : this.m + paraString)
+                return lurl + (paraString == '' && this.m !== '#' ? '' : this.m + paraString) + (rurl ? rurl : "")
             }
             if(typeof(arguments[0]) == 'string'){
                 return set.apply(this,[arguments[0],arguments[1],arguments[2]]);
             }else if(typeof(arguments[0])=='object'){
-                var arg = arguments[0],url = arguments[1] || location.href
+                var arg = arguments[0],url = typeof arguments[1] == 'undefined' ? window.location.href : arguments[1];
                 for(aaa in arg){
                     url = set.apply(this,[aaa,arg[aaa],url])
                 }
