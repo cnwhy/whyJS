@@ -247,7 +247,7 @@
         return o
     })()
 
-    //序列化,反序列化
+    //Query序列化,反序列化
     var QueryString = why.QueryString = (function () {
         var ms = {
             sep : '&',
@@ -423,9 +423,6 @@
     }
 
 
-
-
-
 /********************以下为浏览器相关函数***************************/
     why.HTML = {
         /**
@@ -552,7 +549,7 @@
         if (!window.getSelection) { 
             return document.selection.createRange().text;
         } else {
-            return textObj.value.substr(textObj.selectionStart, textObj.selectionEnd - textObj.selectionStart);
+            return textObj.value.substring(textObj.selectionStart, textObj.selectionEnd);
         }
     }
 
