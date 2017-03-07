@@ -120,6 +120,18 @@
     }
 
     /**
+     * 实例化,可以apply方式传参  使用方法 newFn.apply(Class,[args...])
+     * @return {object}
+     */
+    var newFn = why.newFn = function(){
+        if(typeof this !== "function") throw TypeErr("'this' is not function!")
+        var obj = {};
+        obj.__proto__ = this.prototype;
+        this.apply(obj,arguments);
+        return obj;
+    }
+
+    /**
      * 生成一个GUID
      * @return {string} GUID
      */
