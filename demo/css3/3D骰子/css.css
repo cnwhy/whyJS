@@ -1,0 +1,368 @@
+* {
+	padding: 0;
+	margin: 0;
+}
+
+body {
+	background: #333;
+	overflow: hidden;
+}
+
+
+/*flex 骰子部局*/
+
+#box {
+	font-size: 25px;
+	font-size: 4vh;
+	font-size: 4vmin;
+	user-select: none;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 10em;
+	height: 10em;
+	margin: -5em 0 0 -5em;
+	cursor: pointer;
+}
+
+.sz_box div[class^=v] {
+	display: inline-flex;
+	vertical-align: top;
+	height: 10em;
+	width: 10em;
+	border: .25em solid #999;
+	flex-direction: row;
+	flex-wrap: wrap;
+	align-content: space-around;
+	border-radius: 1em;
+	padding: .5em;
+	background: #FFF;
+	box-sizing: border-box;
+	opacity: .9;
+}
+
+div[class^=v] i {
+	width: 0;
+	height: 0;
+	padding: 23% 23% 0 0;
+	margin: 5%;
+	background: #333;
+	border-radius: 50%;
+	display: inline-flex;
+	flex: none;
+}
+
+div.v1 i,
+div.v4 i {
+	background: #C33;
+}
+
+div.v1 {
+	flex: 0 0 auto;
+	justify-content: center;
+	align-items: center;
+}
+
+div.v1 i {
+	padding: 40% 40% 0 0;
+}
+
+div.v2 {
+	justify-content: space-between;
+	align-items: flex-start;
+}
+
+div.v2 i:nth-child(2) {
+	align-self: flex-end;
+}
+
+div.v3 {
+	justify-content: space-between;
+	align-items: flex-start;
+}
+
+div.v3 i:nth-child(2) {
+	align-self: center;
+}
+
+div.v3 i:nth-child(3) {
+	align-self: flex-end;
+}
+
+div.v4 i {
+	margin: 13.5%;
+}
+
+div.v5 {
+	justify-content: space-between;
+	align-items: flex-start;
+}
+
+div.v5 i:nth-child(3) {
+	margin-left: 39.5%;
+	margin-right: 39.5%;
+}
+
+div.v6 {
+	flex-direction: column;
+	justify-content: space-around;
+	align-content: space-around;
+}
+
+.gd {
+	transition: all .3s;
+}
+
+
+/*3D拼接*/
+
+
+.sz_box {
+	width: 10em;
+	height: 10em;
+	transform-style: preserve-3d;
+	/*transform:perspective(30em) rotateX(-15deg) rotateY(15deg);*/
+}
+
+.sz_box_xy,
+.sz_box_x,
+.sz_box_y {
+	position: absolute;
+	width: 10em;
+	height: 10em;
+	transform-style: preserve-3d;
+	perspective-origin: left top;
+}
+
+.sz_box div[class^=v] {
+	position: absolute;
+}
+
+div.v1 {
+	transform: translateZ(5em)
+}
+
+div.v6 {
+	transform: translateZ(-5em) rotateZ(90deg);
+}
+
+div.v2 {
+	top: 5em;
+	transform: rotateX(90deg);
+}
+
+div.v5 {
+	transform: rotateX(-90deg);
+	top: -5em;
+}
+
+div.v3 {
+	transform: rotateY(90deg);
+	left: -5em;
+}
+
+div.v4 {
+	transform: rotateY(-90deg);
+	left: 5em;
+}
+
+
+/*调整骰子 方便观察*/
+
+
+/*网格背景*/
+
+.m_box.wg>[class^=m],
+.debug .sz_box div[class^=v],
+.debug .bg_wg {
+	background: -webkit-linear-gradient(top, transparent 96%, currentColor 100%), -webkit-linear-gradient(left, transparent 96%, currentColor 100%);
+	background-size: 50% 50%;
+}
+
+
+/*辅助 坐标轴等*/
+
+.m_box.wg>[class^=m],
+.sz_box_xy.wg div[class^=v] {
+	background-size: 10% 10%;
+}
+
+.debug .sz_box div[class^=v] {
+	color: #0FF;
+	border-radius: 0;
+	border: 1px solid currentColor;
+	flex: 0 0 auto;
+	justify-content: center;
+	align-items: center;
+	opacity: .5;
+}
+
+.debug div[class^=v] i {
+	display: none;
+}
+
+.debug div[class^=v]:before {
+	font-size: 2em;
+}
+
+.debug div.v1:before {
+	content: "Z"
+}
+
+.debug div.v6:before {
+	content: "-Z"
+}
+
+.debug div.v2:before {
+	content: "Y"
+}
+
+.debug div.v5:before {
+	content: "-Y"
+}
+
+.debug div.v3:before {
+	content: "-X"
+}
+
+.debug div.v4:before {
+	content: "X"
+}
+
+.zb_box {
+	pointer-events: none;
+}
+
+.zb_box b {
+	font-style: normal;
+	font-weight: normal;
+}
+
+.zb_box .zb_x,
+.zb_box .zb_y,
+.zb_box .zb_z {
+	background: currentColor;
+}
+
+.zb_box .zb_x {
+	height: 1px;
+	position: fixed;
+	top: 50%;
+	width: 100em;
+	transform: translateX(-50em);
+	color: #F00;
+}
+
+.zb_box .zb_y {
+	width: 1px;
+	position: fixed;
+	left: 50%;
+	height: 100em;
+	transform: translateY(-50em);
+	color: #0F0;
+}
+
+.zb_box .zb_z {
+	height: 1px;
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	margin-left: -50em;
+	width: 100em;
+	transform: rotateY(90deg);
+	color: #00F;
+}
+
+.zb_box .m_box {
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	width: 10em;
+	height: 10em;
+	margin: -5em 0 0 -5em;
+	transform-style: preserve-3d;
+}
+
+.m_box>[class^=m] {
+	border: 1px dashed currentColor;
+	box-sizing: border-box;
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	display: inline-flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.zb_box .m_before {
+	transform: translateZ(5em);
+}
+
+.zb_box .m_after {
+	transform: translateZ(-5em) rotateZ(90deg);
+}
+
+.zb_box .m_down {
+	top: 5em;
+	transform: rotateX(90deg);
+}
+
+.zb_box .m_up {
+	transform: rotateX(-90deg);
+	top: -5em;
+}
+
+.zb_box .m_left {
+	transform: rotateY(90deg);
+	left: -5em;
+}
+
+.zb_box .m_right {
+	transform: rotateY(-90deg);
+	left: 5em;
+}
+
+
+/*坐标轴*/
+
+.m_box>[class^=m]:before {
+	font-size: 2em;
+	opacity: .3;
+}
+
+.zb_box .m_before:before {
+	content: "Z"
+}
+
+.zb_box .m_after:before {
+	content: "-Z"
+}
+
+.zb_box .m_down:before {
+	content: "Y"
+}
+
+.zb_box .m_up:before {
+	content: "-Y"
+}
+
+.zb_box .m_left:before {
+	content: "-X"
+}
+
+.zb_box .m_right:before {
+	content: "X"
+}
+
+
+/*控制面板*/
+
+.range {
+	width: 360px;
+}
+
+.range+span {
+	display: inline-block;
+	width: 30px;
+	text-align: center;
+}

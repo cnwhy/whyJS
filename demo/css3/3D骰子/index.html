@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<script id="jquery_183" type="text/javascript" class="library" src="http://sandbox.runjs.cn/js/sandbox/jquery/jquery-1.8.3.min.js"></script>
+	<script type="text/javascript" src="http://sandbox.runjs.cn/uploads/rs/234/2fkzyp1x/sylvester.src.js"></script>
+	<link rel="stylesheet" href="css.css" />
+	<script src="js.js"></script>
+</head>
+<body>
+	<!-->操作面板</!-->
+	<div id="commbox" style="position:fixed; left:0; top:0; z-index:1000; background:rgba(255,255,255,.8); padding:5px; user-select: none; font-size:12px;">
+		<div>
+			<button class="comm_reset" style="display:;">重置</button>
+			<button class="comm_reset_sj">重置视角</button>
+			<button class="comm_reset_sz">重置骰子</button>
+			<select class="comm_type" id="">
+				<option value="0">模式1</option>
+				<option value="1">模式2</option>
+			</select>
+			<!--<button class="comm_type" style="display:;">模式切换</button>-->
+			<button class="comm_debug">透视图</button>
+			<button class="comm_wg">网格</button>
+		</div>
+		<div>
+			<p>鼠标左键转动立方体;</p>
+			<p>鼠标中键转动视角;</p>
+			<p>鼠标滚轮放大缩小;</p>
+			<p>Ctrl+z 回退;</p>
+		</div>
+		<div class="log" style="max-height:15em; overflow:auto;"></div>
+	</div>
+
+	<!-- x,y,z调整面板 -->
+	<div style="position:fixed; right:0; top:0; background:rgba(255,255,255,.7); padding:5px; font-size:12px; display:none;">
+		<button class="comm_reset_sz">还原</button>
+		<div>
+			<span style="color:#F00">X轴</span> : 
+			<input class="range range_x" type="range" max="180" min="-180" value="0"> <span class="text_x">0</span>
+		</div>
+		<div>
+			<span style="color:#0F0">Y轴</span> : 
+			<input class="range range_y" type="range" max="180" min="-180" value="0"> <span class="text_y">0</span>
+		</div>
+		<div>
+			<span style="color:#00F">Z轴</span> : 
+			<input class="range range_z" type="range" max="180" min="-180" value="0"> <span class="text_z">0</span>
+		</div>
+	</div>
+	<div id="box" style="transform-style: preserve-3d; transform:perspective(30em);">
+		<div class="sz_box" style="">
+			<!-- 原始位置占位 -->
+			<div class="zb_box" style="color:#FFF;">
+				<!-- 模拟坐标轴 -->
+				<b class="zb_x"></b><b class="zb_y"></b><b class="zb_z"></b>
+				<!-- 模拟正方体 -->
+				<div class="m_box">
+					<b class="m_before"></b>
+					<b class="m_after"></b>
+					<b class="m_down"></b>
+					<b class="m_up"></b>
+					<b class="m_left"></b>
+					<b class="m_right"></b>
+				</div>
+			</div>
+
+			<div class="sz_box_y"><div class="sz_box_x">
+			<div class="sz_box_xy">
+				<div class="v1"><i></i></div>
+				<div class="v2"><i></i><i></i></div>
+				<div class="v3"><i></i><i></i><i></i></div>
+				<div class="v4"><i></i><i></i><i></i><i></i></div>
+				<div class="v5"><i></i><i></i><i></i><i></i><i></i></div>
+				<div class="v6"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+				<div class="zb_box" style="color:#F00;">
+					<b class="zb_x"></b><b class="zb_y"></b><b class="zb_z"></b>
+				</div>
+			</div>
+			</div></div>
+		</div>
+	</div>
+</body>
+</html>
