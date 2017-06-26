@@ -79,7 +79,6 @@ function getMap(path){
 	return maps;
 }
 
-
 function jsonGet(json,paths){
 	var n = 0;
 	var maps = [];
@@ -110,24 +109,32 @@ function jsonGet(json,paths){
 
 function fn_filterKey(maps){
 	if(!maps || maps.length <=0) return function(){return {maps:null,mark:0};}
-	var M = {},mark = 0;
+	var M = [],mark = 0;
+	function sM(key){
+		for(var i=M.length; i--;){
+			var m = M[i];
+			if(m.key == key) return m;
+		}
+	}
 	maps.forEach(function(map){
 		var key = map.map[0];
-		if(M[key]){
-			M[key].push(map);
+		var vM = sM(key);
+		if(vM){
+			vM.val.push(map);
 		}else{
 			mark++;
-			M[key] = [map]
+			M.push({key:key,val:[map]})
+			// M[key] = [map]
 		}
 	})
 	return function(key){
-		var arr = M[key]
-		if(arr){
-			arr.forEach(function(v){
+		var obj = sM(key);
+		if(obj){
+			obj.val.forEach(function(v){
 				v.map.shift();
 			})
 			mark--;
-			return {maps:arr,mark:mark};
+			return {maps:obj.val,mark:mark};
 		}else{
 			return {maps:null,mark:mark};
 		}
@@ -169,14 +176,14 @@ function re_any(json,n,maps,p){
 		if(!isnomext) return function(){};
 		return function(n){
 			var str = json.substring(on,n+1);
-			// var val = eval('('+str+')');
-			var val = JSON.parse(str);
+			var val = eval('('+str+')');
+			// var val = JSON.parse(str);
 			maps_nonext.forEach(function(v){
 				v.val = val;
 			})
 		}
 	})(n)
-
+	var on = n;
 	if(type_mark === CODE_S){
 		n = re_string(json,n);
 	}else if(type_mark === CODE_A_S){
@@ -193,11 +200,6 @@ function re_any(json,n,maps,p){
 	nonext(n);
 	// global.MK += 1;
 	return n;
-}
-
-function value_any(json,n){
-	// return eval('('+json.substring(n,re_any(json,n)+1)+')')
-	return JSON.parse(json.substring(n,re_any(json,n)+1));
 }
 
 function re_string(json,n,sp){
@@ -263,10 +265,7 @@ function re_json(json,n,maps,p){
 
 function re_array(json,n,maps,p){
 	var i = 0,mark=0;
-	// var isMap = maps && maps.length > 0;
-	// cb = typeof(cb) == "function" ? cb : null;
 	var filterKey = fn_filterKey(maps);
-
 	for(n++; n<json.length; n++){
 		var char = json.charCodeAt(n);
 		if(isk(char)) continue;

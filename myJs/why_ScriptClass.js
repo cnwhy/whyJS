@@ -583,7 +583,6 @@ function HDDW(id,w2,type,sd,auto,sllp) {//滑动改变值;
 		default:
 			alert("参数错误！");
 			return;
-			break;
 	};
 	if(auto) setTimeout(function(){HDDW(id,w2,type,sd,auto,sllp)},sllp);
 }
